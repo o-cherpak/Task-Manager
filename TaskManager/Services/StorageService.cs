@@ -6,9 +6,9 @@ namespace TaskManager.Services;
 
 public class StorageService
 {
-    private string todoPath = Path.Combine(AppContext.BaseDirectory, "todos.json");
+    private readonly string _todoPath = Path.Combine(AppContext.BaseDirectory, "todos.json");
 
-    private JsonSerializerOptions jsonOptions = new JsonSerializerOptions
+    private JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
     {
         Converters = { new JsonStringEnumConverter() },
         WriteIndented = true
@@ -18,14 +18,14 @@ public class StorageService
     {
         var json = JsonSerializer.Serialize(todoItems);
 
-        await File.WriteAllTextAsync(todoPath, json);
+        await File.WriteAllTextAsync(_todoPath, json);
     }
 
     public async Task<List<TodoItem>> LoadAsync()
     {
-        if (!File.Exists(todoPath)) return new List<TodoItem>();
+        if (!File.Exists(_todoPath)) return new List<TodoItem>();
 
-        var json = await File.ReadAllTextAsync(todoPath);
+        var json = await File.ReadAllTextAsync(_todoPath);
 
         return JsonSerializer.Deserialize<List<TodoItem>>(json) ?? new List<TodoItem>();
     }
