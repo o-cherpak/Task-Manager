@@ -16,7 +16,7 @@ public class StorageService
 
     public async Task SaveAsync(List<TodoItem> todoItems)
     {
-        var json = JsonSerializer.Serialize(todoItems);
+        var json = JsonSerializer.Serialize(todoItems, _jsonOptions);
 
         await File.WriteAllTextAsync(_todoPath, json);
     }
@@ -27,6 +27,6 @@ public class StorageService
 
         var json = await File.ReadAllTextAsync(_todoPath);
 
-        return JsonSerializer.Deserialize<List<TodoItem>>(json) ?? new List<TodoItem>();
+        return JsonSerializer.Deserialize<List<TodoItem>>(json, _jsonOptions) ?? new List<TodoItem>();
     }
 }
