@@ -14,6 +14,11 @@ public class TodoManager
 
     public TodoItem AddTodoItem(string title)
     {
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            throw new ArgumentException("Title cannot be empty.", title);
+        }
+
         TodoItem todoItem = new TodoItem(
             Guid.NewGuid(),
             title,

@@ -28,6 +28,15 @@ public class TodoManagerTest
     }
 
     [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData("  ")]
+    public void AddTodoItem_EmptyTitleTest(string title)
+    {
+        Assert.Throws<ArgumentException>(() => _tm.AddTodoItem(title));
+    }
+
+    [Theory]
     [InlineData("White")]
     [InlineData("Orange")]
     [InlineData("Marimbo")]
