@@ -1,4 +1,5 @@
-﻿using TaskManager.Models;
+﻿using TaskManager.Exceptions;
+using TaskManager.Models;
 
 namespace TaskManager.Services;
 
@@ -11,7 +12,7 @@ public class TodoManager
         TodoItem todoItem = new TodoItem(
             Guid.NewGuid(),
             title,
-            TodoStatus.InProgress,
+            TodoStatus.Pending,
             DateTime.Now
         );
 
@@ -20,10 +21,10 @@ public class TodoManager
         return todoItem;
     }
 
-    public IOrderedEnumerable<TodoItem> GetAll()
+    public IEnumerable<TodoItem> GetAll()
     {
         return _todoItems.OrderBy(todo => todo.CreatedAt);
-    }
+    } 
 
     public IEnumerable<TodoItem> GetActive()
     {
@@ -32,19 +33,19 @@ public class TodoManager
 
     public void SetComplete(Guid id)
     {
-        var todo = _todoItems.FirstOrDefault(todo => todo.Id == id);
+        var index = _todoItems.FindIndex(todo => todo.Id == id);
 
-        if (todo is null) return;
-
-        todo = todo with { Status = TodoStatus.Done };
+        if (index == -1) throw new TodoNotFoundException(id);
+        _todoItems[index] = _todoItems[index] with { Status = TodoStatus.Done };
     }
 
     public void Delete(Guid id)
     {
-        var todo = _todoItems.FirstOrDefault(todo => todo.Id == id);
+        TodoItem todo;
 
-        if (todo is null) return;
-
+        todo = _todoItems.FirstOrDefault(t => t.Id == id)
+               ?? throw new TodoNotFoundException(id);
+        
         _todoItems.Remove(todo);
     }
 }
