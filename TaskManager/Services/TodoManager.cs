@@ -7,6 +7,11 @@ public class TodoManager
 {
     private List<TodoItem> _todoItems = new List<TodoItem>();
 
+    public void LoadTodoItems(List<TodoItem> todoItems)
+    {
+        _todoItems = todoItems;
+    }
+
     public TodoItem AddTodoItem(string title)
     {
         TodoItem todoItem = new TodoItem(
