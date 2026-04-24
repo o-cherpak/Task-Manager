@@ -46,17 +46,13 @@ public class TodoManagerTest
     }
 
     [Fact]
-    public void GetTodoById()
+    public void GetTodoById_AfterDelete()
     {
         var title = "Banana";
         var todo = _tm.AddTodoItem(title);
 
         _tm.Delete(todo.Id);
 
-        Assert.Throws<TodoNotFoundException>(() =>
-        {
-            var upatedTodo = _tm.GetTodoById(todo.Id);
-            _tm.GetTodoById(upatedTodo.Id);
-        });
+        Assert.Throws<TodoNotFoundException>(() => _tm.GetTodoById(todo.Id));
     }
 }
