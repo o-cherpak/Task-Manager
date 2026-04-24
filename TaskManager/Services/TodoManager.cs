@@ -26,10 +26,16 @@ public class TodoManager
         return todoItem;
     }
 
+    public TodoItem GetTodoById(Guid id)
+    {
+        return _todoItems.FirstOrDefault(todo => todo.Id == id)
+               ?? throw new TodoNotFoundException(id);
+    }
+
     public IEnumerable<TodoItem> GetAll()
     {
         return _todoItems.OrderBy(todo => todo.CreatedAt);
-    } 
+    }
 
     public IEnumerable<TodoItem> GetActive()
     {
@@ -50,7 +56,7 @@ public class TodoManager
 
         todo = _todoItems.FirstOrDefault(t => t.Id == id)
                ?? throw new TodoNotFoundException(id);
-        
+
         _todoItems.Remove(todo);
     }
 }
