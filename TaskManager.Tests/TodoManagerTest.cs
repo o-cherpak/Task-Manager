@@ -54,8 +54,17 @@ public class TodoManagerTest
         Assert.Equal(TodoStatus.Pending, todo2Updated.Status);
     }
 
+    [Theory]
+    [InlineData("00000000-0000-0000-0000-000000000001")]
+    [InlineData("00000000-0000-0000-0000-000000000002")]
+    [InlineData("00000000-0000-0000-0000-000000000003")]
+    public void SetComplete_InvalidIdTest(Guid id)
+    {
+        Assert.Throws<TodoNotFoundException>(() => _tm.SetComplete(id));
+    }
+
     [Fact]
-    public void GetTodoById_AfterDelete()
+    public void GetTodoById_AfterDeleteTest()
     {
         var title = "Banana";
         var todo = _tm.AddTodoItem(title);
@@ -63,5 +72,38 @@ public class TodoManagerTest
         _tm.Delete(todo.Id);
 
         Assert.Throws<TodoNotFoundException>(() => _tm.GetTodoById(todo.Id));
+    }
+
+    [Fact]
+    public void Delete_ExistingItemTest()
+    {
+        var todoItem1 = _tm.AddTodoItem("todo1");
+        var todoItem2 = _tm.AddTodoItem("todo2");
+
+        _tm.Delete(todoItem1.Id);
+        _tm.Delete(todoItem2.Id);
+
+        Assert.True(!_tm.GetAll().Any());
+    }
+
+    [Theory]
+    [InlineData("00000000-0000-0000-0000-000000000001")]
+    [InlineData("00000000-0000-0000-0000-000000000002")]
+    [InlineData("00000000-0000-0000-0000-000000000003")]
+    public void Delete_InvalidIdTest(Guid id)
+    {
+        Assert.Throws<TodoNotFoundException>(() => _tm.Delete(id));
+    }
+
+    [Fact]
+    public void GetActiveTest()
+    {
+        var todo1 = _tm.AddTodoItem("todo1");
+        _tm.AddTodoItem("todo2");
+        _tm.AddTodoItem("todo3");
+        
+        _tm.SetComplete(todo1.Id);
+        
+        Assert.True(_tm.GetActive().Count() == 2);
     }
 }
