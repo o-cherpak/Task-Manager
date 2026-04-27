@@ -156,4 +156,32 @@ public class TodoManagerTest : IDisposable
 
         Assert.All(result, t => Assert.Equal(TodoPriority.High, t.Priority));
     }
+
+    [Fact]
+    void SetDeadlineTest()
+    {
+        var deadLine = DateTime.Now.AddDays(1);
+        var todoId = _tm.AddTodoItem("todo1").Id;
+        _tm.SetDeadline(todoId, deadLine);
+
+        Assert.True(_tm.GetTodoById(todoId).DeadLine == deadLine);
+    }
+
+    [Fact]
+    void GetOverdueTest()
+    {
+        _tm.AddTodoItem("todo");
+        var todo1Id = _tm.AddTodoItem("todo1", TodoPriority.High).Id;
+        var todo2Id = _tm.AddTodoItem("todo2", TodoPriority.High).Id;
+
+
+        var deadLine = DateTime.Now.AddDays(-1);
+        _tm.SetDeadline(todo1Id, deadLine);
+        _tm.SetDeadline(todo2Id, deadLine);
+
+        var overdueTodos = _tm.GetAllOverdue().ToList();
+
+        Assert.Equal(2, overdueTodos.Count);
+        Assert.All(overdueTodos, todo => Assert.True(todo.Status == TodoStatus.Pending));
+    }
 }
