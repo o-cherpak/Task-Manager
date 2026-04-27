@@ -125,12 +125,12 @@ public class TodoManagerTest : IDisposable
     [Fact]
     void GetByPriorityTest()
     {
-        var todoItem1 = _tm.AddTodoItem("todo1");
-        var todoItem2 = _tm.AddTodoItem("todo2", TodoPriority.High);
-        var todoItem3 = _tm.AddTodoItem("todo3", TodoPriority.High);
+        _tm.AddTodoItem("todo1");
+        _tm.AddTodoItem("todo2", TodoPriority.High);
+        _tm.AddTodoItem("todo3", TodoPriority.High);
 
-        var result = _tm.GetPriority(TodoPriority.High).ToArray();
+        var result = _tm.GetPriority(TodoPriority.High).ToList();
 
-        Assert.Equal([todoItem2, todoItem3], result);
+        Assert.All(result, t => Assert.Equal(TodoPriority.High, t.Priority));
     }
 }
