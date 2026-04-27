@@ -20,8 +20,10 @@ public class TodoDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<TodoItem>()
-            .Property(t => t.Status)
-            .HasConversion<string>();
+        modelBuilder.Entity<TodoItem>(entity =>
+        {
+            entity.Property(t => t.Priority).HasConversion<string>();
+            entity.Property(t => t.Status).HasConversion<string>();
+        });
     }
 }

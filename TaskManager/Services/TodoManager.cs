@@ -12,7 +12,7 @@ public class TodoManager
         _db = db;
     }
 
-    public TodoItem AddTodoItem(string title)
+    public TodoItem AddTodoItem(string title, TodoPriority priority = TodoPriority.Low)
     {
         if (string.IsNullOrWhiteSpace(title))
         {
@@ -24,6 +24,7 @@ public class TodoManager
             Id = Guid.NewGuid(),
             Title = title,
             Status = TodoStatus.Pending,
+            Priority = priority,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -47,6 +48,11 @@ public class TodoManager
     public IEnumerable<TodoItem> GetActive()
     {
         return _db.TodoItems.Where(todo => todo.Status != TodoStatus.Done);
+    }
+
+    public IEnumerable<TodoItem> GetPriority(TodoPriority priority)
+    {
+        return _db.TodoItems.Where(todo => todo.Priority == priority);
     }
 
     public void SetComplete(Guid id)

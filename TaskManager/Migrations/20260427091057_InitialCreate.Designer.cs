@@ -12,8 +12,8 @@ using TaskManager;
 namespace TaskManager.Migrations
 {
     [DbContext(typeof(TodoDbContext))]
-    [Migration("20260426235709_InitialCreate_Todos")]
-    partial class InitialCreate_Todos
+    [Migration("20260427091057_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,6 +33,10 @@ namespace TaskManager.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Status")
                         .IsRequired()
