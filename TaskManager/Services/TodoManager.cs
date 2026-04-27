@@ -1,10 +1,12 @@
-﻿using TaskManager.Exceptions;
+﻿using Microsoft.EntityFrameworkCore;
+using TaskManager.Exceptions;
 using TaskManager.Models;
 
 namespace TaskManager.Services;
 
 public class TodoManager
 {
+    //Todos
     private readonly TodoDbContext _db;
 
     public TodoManager(TodoDbContext db)
@@ -84,5 +86,49 @@ public class TodoManager
         return _db.TodoItems
             .Where(t => t.DeadLine < DateTime.UtcNow
                         && t.Status != TodoStatus.Done);
+    }
+
+    //Categories
+
+    public Category AddCategory(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("Name cannot be empty.", name);
+        }
+
+        Category category = new Category
+        {
+            Id = Guid.NewGuid(),
+            Name = name,
+            Todos = new List<TodoItem>()
+        };
+
+        _db.Categories.Add(category);
+        _db.SaveChanges();
+        return category;
+    }
+
+    public Category GetCategoryById(Guid id)
+    {
+        return _db.Categories.FirstOrDefault(category => category.Id == id)
+               ?? throw new InvalidOperationException("Category not found");
+    }
+
+    public void AssignCategory(Guid todoId, Guid categoryId)
+    {
+        var todoItem = GetTodoById(todoId);
+        var category = GetCategoryById(categoryId);
+
+        todoItem.CategoryId = categoryId;
+        todoItem.Category = category;
+        
+        _db.SaveChanges();
+    }
+
+    public IEnumerable<TodoItem> GetByCategory(Guid categoryId)
+    {
+        return _db.TodoItems.Where(t => t.CategoryId == categoryId)
+            .Include(t => t.Category);
     }
 }

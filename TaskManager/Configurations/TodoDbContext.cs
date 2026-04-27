@@ -15,6 +15,7 @@ public class TodoDbContext : DbContext
     }
 
     public DbSet<TodoItem> TodoItems { get; set; }
+    public DbSet<Category> Categories { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
