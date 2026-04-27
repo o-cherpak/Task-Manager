@@ -7,4 +7,5 @@ public class TodoItem
     public TodoStatus Status { get; set; }
     public TodoPriority Priority { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime? DeadLine { get; set; }
 }

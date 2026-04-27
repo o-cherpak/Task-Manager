@@ -57,8 +57,7 @@ public class TodoManager
 
     public void SetComplete(Guid id)
     {
-        var todoItem = _db.TodoItems.FirstOrDefault(todo => todo.Id == id)
-                       ?? throw new TodoNotFoundException(id);
+        var todoItem = GetTodoById(id);
 
         todoItem.Status = TodoStatus.Done;
         _db.SaveChanges();
@@ -66,12 +65,24 @@ public class TodoManager
 
     public void Delete(Guid id)
     {
-        TodoItem todo;
-
-        todo = _db.TodoItems.FirstOrDefault(t => t.Id == id)
-               ?? throw new TodoNotFoundException(id);
+        var todo = GetTodoById(id);
 
         _db.TodoItems.Remove(todo);
         _db.SaveChanges();
+    }
+
+    public void SetDeadline(Guid id, DateTime deadline)
+    {
+        var todo = GetTodoById(id);
+
+        todo.DeadLine = deadline;
+        _db.SaveChanges();
+    }
+
+    public IEnumerable<TodoItem> GetAllOverdue()
+    {
+        return _db.TodoItems
+            .Where(t => t.DeadLine < DateTime.UtcNow
+                        && t.Status != TodoStatus.Done);
     }
 }
