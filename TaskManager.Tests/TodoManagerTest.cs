@@ -20,6 +20,15 @@ public class TodoManagerTest : IDisposable
         _tm = new TodoManager(_db);
     }
 
+    public static IEnumerable<object[]> GetTodoTitles()
+    {
+        yield return ["MyNewTitleForTesting"];
+        yield return ["BlackBlack"];
+        yield return ["WhiteYellow"];
+        yield return ["Orange"];
+        yield return ["Dinner"];
+    }
+
     public void Dispose()
     {
         _db.Database.EnsureDeleted();
@@ -27,11 +36,7 @@ public class TodoManagerTest : IDisposable
     }
 
     [Theory]
-    [InlineData("MyNewTitleForTesting")]
-    [InlineData("BlackBlack")]
-    [InlineData("WhiteYellow")]
-    [InlineData("Orange")]
-    [InlineData("Dinner")]
+    [MemberData(nameof(GetTodoTitles))]
     public void AddTodoItemTest(string title)
     {
         var todo = _tm.AddTodoItem(title);
@@ -40,6 +45,24 @@ public class TodoManagerTest : IDisposable
         Assert.Equal(TodoStatus.Pending, todo.Status);
         Assert.Equal(TodoPriority.High, todoWithHighPriority.Priority);
         Assert.Equal(title, todo.Title);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetTodoTitles))]
+    public void DefaultPriority_IsLowTest(string title)
+    {
+        var todoId = _tm.AddTodoItem(title).Id;
+
+        Assert.True(TodoPriority.Low == _tm.GetTodoById(todoId).Priority);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetTodoTitles))]
+    public void TodoItem_WithHighPriorityTest(string title)
+    {
+        var todoId = _tm.AddTodoItem(title, TodoPriority.High).Id;
+
+        Assert.True(TodoPriority.High == _tm.GetTodoById(todoId).Priority);
     }
 
     [Theory]
