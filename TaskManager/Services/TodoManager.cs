@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TaskManager;
 using TaskManager.Exceptions;
 using TaskManager.Models;
 
