@@ -7,10 +7,12 @@ namespace TaskManager.Tests;
 public class TodoManagerTest
 {
     private readonly TodoManager _tm;
+    private readonly TodoDbContext _db;
 
     public TodoManagerTest()
     {
-        _tm = new TodoManager();
+        _db = new TodoDbContext();
+        _tm = new TodoManager(_db);
     }
 
     [Theory]
@@ -101,9 +103,9 @@ public class TodoManagerTest
         var todo1 = _tm.AddTodoItem("todo1");
         _tm.AddTodoItem("todo2");
         _tm.AddTodoItem("todo3");
-        
+
         _tm.SetComplete(todo1.Id);
-        
+
         Assert.True(_tm.GetActive().Count() == 2);
     }
 }

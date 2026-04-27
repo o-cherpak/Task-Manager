@@ -5,11 +5,11 @@ namespace TaskManager.Services;
 
 public class TodoManager
 {
-    private List<TodoItem> _todoItems = new List<TodoItem>();
+    private readonly TodoDbContext _db;
 
-    public void LoadTodoItems(List<TodoItem> todoItems)
+    public TodoManager(TodoDbContext db)
     {
-        _todoItems = todoItems;
+        _db = db;
     }
 
     public TodoItem AddTodoItem(string title)
@@ -19,49 +19,53 @@ public class TodoManager
             throw new ArgumentException("Title cannot be empty.", title);
         }
 
-        TodoItem todoItem = new TodoItem(
-            Guid.NewGuid(),
-            title,
-            TodoStatus.Pending,
-            DateTime.Now
-        );
+        TodoItem todoItem = new TodoItem
+        {
+            Id = Guid.NewGuid(),
+            Title = title,
+            Status = TodoStatus.Pending,
+            CreatedAt = DateTime.UtcNow
+        };
 
-        _todoItems.Add(todoItem);
+        _db.TodoItems.Add(todoItem);
+        _db.SaveChanges();
 
         return todoItem;
     }
 
     public TodoItem GetTodoById(Guid id)
     {
-        return _todoItems.FirstOrDefault(todo => todo.Id == id)
+        return _db.TodoItems.FirstOrDefault(todo => todo.Id == id)
                ?? throw new TodoNotFoundException(id);
     }
 
     public IEnumerable<TodoItem> GetAll()
     {
-        return _todoItems.OrderBy(todo => todo.CreatedAt);
+        return _db.TodoItems.OrderBy(todo => todo.CreatedAt);
     }
 
     public IEnumerable<TodoItem> GetActive()
     {
-        return _todoItems.Where(todo => todo.Status != TodoStatus.Done);
+        return _db.TodoItems.Where(todo => todo.Status != TodoStatus.Done);
     }
 
     public void SetComplete(Guid id)
     {
-        var index = _todoItems.FindIndex(todo => todo.Id == id);
+        var todoItem = _db.TodoItems.FirstOrDefault(todo => todo.Id == id)
+                       ?? throw new TodoNotFoundException(id);
 
-        if (index == -1) throw new TodoNotFoundException(id);
-        _todoItems[index] = _todoItems[index] with { Status = TodoStatus.Done };
+        todoItem.Status = TodoStatus.Done;
+        _db.SaveChanges();
     }
 
     public void Delete(Guid id)
     {
         TodoItem todo;
 
-        todo = _todoItems.FirstOrDefault(t => t.Id == id)
+        todo = _db.TodoItems.FirstOrDefault(t => t.Id == id)
                ?? throw new TodoNotFoundException(id);
 
-        _todoItems.Remove(todo);
+        _db.TodoItems.Remove(todo);
+        _db.SaveChanges();
     }
 }

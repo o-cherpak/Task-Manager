@@ -1,8 +1,9 @@
 ﻿namespace TaskManager.Models;
 
-public record TodoItem(
-    Guid Id,
-    string Title,
-    TodoStatus Status,
-    DateTime CreatedAt
-);
+public class TodoItem
+{
+    public Guid Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public TodoStatus Status { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
